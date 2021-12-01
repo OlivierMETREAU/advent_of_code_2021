@@ -1,4 +1,7 @@
-from common.read_data_from_file import DataFile
+if __name__ == "__main__":
+   from read_data_from_file import DataFile
+else:
+   from ..src.read_data_from_file import DataFile
 
 def count_incresing(data):
    delta = [y-x for x,y in zip(data, data[1:])]
