@@ -1,6 +1,8 @@
 from ..src.read_data_from_file import DataFile
 from ..src import day1
 from ..src import day2
+from ..src import day3
+from ..src import day4
 
 
 def test_day1_first():
@@ -18,3 +20,17 @@ def test_day2_first():
 def test_day2_second():
    data = DataFile("./test/day2_data.txt", applied_function=[None, int]).data_from_file
    assert 900 == day2.second_star(data)
+
+def test_day3_first():
+   data = DataFile("./test/day3_data.txt", applied_function=[None]).data_from_file
+   assert 198 == day3.first_star(data)
+
+def test_day3_second():
+   data = DataFile("./test/day3_data.txt", applied_function=[None]).data_from_file
+   assert 230 == day3.second_star(data)
+
+def test_day4_first():
+   assert 4512 == day4.first_star("./test/day4_data.txt")
+
+def test_day4_second():
+   assert 1924 == day4.second_star("./test/day4_data.txt")
