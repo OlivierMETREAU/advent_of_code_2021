@@ -3,7 +3,7 @@ from ..src import day1
 from ..src import day2
 from ..src import day3
 from ..src import day4
-
+from ..src import day5
 
 def test_day1_first():
    data = DataFile("./test/day1_data.txt").data_from_file
@@ -34,3 +34,9 @@ def test_day4_first():
 
 def test_day4_second():
    assert 1924 == day4.second_star("./test/day4_data.txt")
+
+def test_day5_first():
+   assert 5 == day5.first_star("./test/day5_data.txt")
+
+def test_day5_second():
+   assert 12 == day5.second_star("./test/day5_data.txt")
