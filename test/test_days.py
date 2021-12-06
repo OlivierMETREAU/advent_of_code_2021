@@ -4,6 +4,7 @@ from ..src import day2
 from ..src import day3
 from ..src import day4
 from ..src import day5
+from ..src import day6
 
 def test_day1_first():
    data = DataFile("./test/day1_data.txt").data_from_file
@@ -40,3 +41,9 @@ def test_day5_first():
 
 def test_day5_second():
    assert 12 == day5.second_star("./test/day5_data.txt")
+
+def test_day6_first():
+   assert 26 == day6.first_star([3,4,3,1,2], 18)
+
+def test_day6_second():
+   assert 26984457539 == day6.first_star([3,4,3,1,2], 256)
