@@ -1,20 +1,42 @@
 import os
 
+class Node:
+   def __init__(self, row, col):
+      self.row = row
+      self.col = col
+      self.visited = False
+      self.tentative_distance = None
+
+   def __repr__(self):
+      return f"| R{self.row}C{self.col}, visited={self.visited}, distance={self.tentative_distance}"
+
 def read_data_from_file(file_name):
-   pair_insertion_rules = {}
+   list_of_nodes = []
    f = open(file_name, "r")
    lines = f.read().splitlines()
    f.close()
-   polymer_template = lines[0]
-   for line in lines[2:]:
-      rule = line.split(" -> ")
-      pair_insertion_rules[rule[0]] = [rule[0][0]+rule[1], rule[1]+rule[0][1]]
-   return polymer_template, pair_insertion_rules
+   row = 0
+   for line in lines:
+      col = 0
+      split_line = [int(x) for x in line]
+      row_of_nodes = []
+      for node in split_line:
+         row_of_nodes.append(Node(row, col))
+         col += 1
+      list_of_nodes.append(row_of_nodes)
+      row += 1
+   list_of_nodes[0][0].tentative_distance = 0
+   return list_of_nodes
 
 def first_star(file_name):
+   list_of_nodes = read_data_from_file(file_name)
+   current_node = list_of_nodes[0][0]
+   
+   print(list_of_nodes)
    pass
 
 def second_star(file_name):
+   list_of_nodes = read_data_from_file(file_name)
    pass
 
 def run_two_stars(file_name):
@@ -28,7 +50,7 @@ def main():
    files = [f"./test/{script_name}_data.txt", f"./test/{script_name}_real_data.txt"]
    for data_file in files:
       run_two_stars(data_file)
-      
+      break
 
 if __name__ == "__main__":
    main()
