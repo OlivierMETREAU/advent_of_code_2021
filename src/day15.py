@@ -1,14 +1,15 @@
 import os
 
 class Node:
-   def __init__(self, row, col):
+   def __init__(self, row, col, risk):
       self.row = row
       self.col = col
+      self.risk = risk
       self.visited = False
-      self.tentative_distance = None
+      self.tentative_risk = None
 
    def __repr__(self):
-      return f"| R{self.row}C{self.col}, visited={self.visited}, distance={self.tentative_distance}"
+      return f"| R{self.row}C{self.col}, visited={self.visited}, distance={self.tentative_risk}"
 
 def read_data_from_file(file_name):
    list_of_nodes = []
@@ -20,24 +21,101 @@ def read_data_from_file(file_name):
       col = 0
       split_line = [int(x) for x in line]
       row_of_nodes = []
-      for node in split_line:
-         row_of_nodes.append(Node(row, col))
+      for risk in split_line:
+         last_node = Node(row, col, risk)
+         row_of_nodes.append(last_node)
          col += 1
       list_of_nodes.append(row_of_nodes)
       row += 1
-   list_of_nodes[0][0].tentative_distance = 0
-   return list_of_nodes
+   list_of_nodes[0][0].tentative_risk = 0
+   return list_of_nodes, last_node
+
+def read_data_from_file_5_times(file_name):
+   list_of_nodes = []
+   f = open(file_name, "r")
+   lines = f.read().splitlines()
+   f.close()
+   row = 0
+   for line in lines:
+      col = 0
+      split_line = [int(x) for x in line]
+      row_of_nodes = []
+      for i in range(5):
+         for risk in split_line:
+            last_node = Node(row, col, ((risk+i-1)%9)+1)
+            row_of_nodes.append(last_node)
+            col += 1
+      list_of_nodes.append(row_of_nodes)
+      row += 1
+   number_of_rows_to_copy = row
+   for i in range(number_of_rows_to_copy, 5*number_of_rows_to_copy):
+      row_of_nodes = []
+      col = 0
+      for node in list_of_nodes[i-number_of_rows_to_copy]:
+         last_node = Node(i, col, (node.risk%9)+1)
+         row_of_nodes.append(last_node)
+         col += 1
+      list_of_nodes.append(row_of_nodes)
+   list_of_nodes[0][0].tentative_risk = 0
+   return list_of_nodes, last_node
+
+def get_unvisited_neighbors(row, col, list_of_nodes, last_node):
+   list_of_unvisited_neighbors = []
+   for x in [col-1, col+1]:
+      if x >= 0 and x <= last_node.col:
+         if not list_of_nodes[row][x].visited:
+            list_of_unvisited_neighbors.append(list_of_nodes[row][x])
+   for x in [row-1, row+1]:
+      if x >= 0 and x <= last_node.row:
+         if not list_of_nodes[x][col].visited:
+            list_of_unvisited_neighbors.append(list_of_nodes[x][col])
+   return list_of_unvisited_neighbors
+
+def get_lowest_risk_unvisited_node(list_of_nodes):
+   lowest_risk_node = None
+   for row in list_of_nodes:
+      for node in row:
+         if node.tentative_risk is not None and not node.visited:
+            if lowest_risk_node is None:
+               lowest_risk_node = node
+            else:
+               if lowest_risk_node.tentative_risk > node.tentative_risk:
+                  lowest_risk_node = node
+   return lowest_risk_node
+
+def find_best_path(list_of_nodes, last_node):
+   current_node = list_of_nodes[0][0]
+   print_index = 0
+   while current_node != last_node:
+      #print(f"{current_node=}")
+      list_of_unvisited_neighbors = get_unvisited_neighbors(current_node.row, current_node.col, list_of_nodes, last_node)
+      for neighbor in list_of_unvisited_neighbors:
+         tentative_risk = current_node.tentative_risk + neighbor.risk
+         if neighbor.tentative_risk == None:
+            neighbor.tentative_risk = tentative_risk
+         neighbor.tentative_risk = min(tentative_risk, neighbor.tentative_risk)
+      current_node.visited = True
+      current_node = get_lowest_risk_unvisited_node(list_of_nodes)
+      if print_index % 1000 == 0:
+         print(current_node)
+         print(last_node)
+      print_index += 1
+   #print(list_of_nodes)
+   return last_node.tentative_risk
+
+def print_map(list_of_nodes):
+   for row in list_of_nodes:
+      print("".join([str(x.risk) for x in row]))
 
 def first_star(file_name):
-   list_of_nodes = read_data_from_file(file_name)
-   current_node = list_of_nodes[0][0]
-   
-   print(list_of_nodes)
-   pass
+   list_of_nodes, last_node = read_data_from_file(file_name)
+   #print_map(list_of_nodes)
+   return find_best_path(list_of_nodes, last_node)
 
 def second_star(file_name):
-   list_of_nodes = read_data_from_file(file_name)
-   pass
+   list_of_nodes, last_node = read_data_from_file_5_times(file_name)
+   #print_map(list_of_nodes)
+   return find_best_path(list_of_nodes, last_node)
 
 def run_two_stars(file_name):
    result = first_star(file_name)
@@ -50,7 +128,7 @@ def main():
    files = [f"./test/{script_name}_data.txt", f"./test/{script_name}_real_data.txt"]
    for data_file in files:
       run_two_stars(data_file)
-      break
+      
 
 if __name__ == "__main__":
    main()
